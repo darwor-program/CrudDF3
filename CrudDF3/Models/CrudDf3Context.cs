@@ -21,6 +21,8 @@ public partial class CrudDf3Context : DbContext
 
     public virtual DbSet<PaquetesTuristico> PaquetesTuristicos { get; set; }
 
+    public virtual DbSet<PaqueteHabitacion> PaqueteHabitaciones { get; set; }
+
     public virtual DbSet<Permiso> Permisos { get; set; }
 
     public virtual DbSet<Reserva> Reservas { get; set; }
@@ -45,29 +47,34 @@ public partial class CrudDf3Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<PaqueteServicio>(entity =>
-        {
-            entity.HasKey(e => e.IdPaqueteServicio).HasName("PK__PaqueteServicio");
+        modelBuilder.Entity<PaqueteServicio>()
+     .HasKey(ps => new { ps.IdPaquete, ps.IdServicio });
 
-            entity.HasOne(d => d.IdPaqueteNavigation)
-                .WithMany(p => p.PaqueteServicios)
-                .HasForeignKey(d => d.IdPaquete)
-                .HasConstraintName("FK_PaqueteServicio_PaquetesTuristico");
+        modelBuilder.Entity<PaqueteServicio>()
+            .HasOne(ps => ps.IdPaqueteNavigation)
+            .WithMany(p => p.PaqueteServicios)
+            .HasForeignKey(ps => ps.IdPaquete);
 
-            entity.HasOne(d => d.IdServicioNavigation)
-                .WithMany(p => p.PaqueteServicios)
-                .HasForeignKey(d => d.IdServicio)
-                .HasConstraintName("FK_PaqueteServicio_Servicios");
-        });
+        modelBuilder.Entity<PaqueteServicio>()
+            .HasOne(ps => ps.IdServicioNavigation)
+            .WithMany(s => s.PaqueteServicios)
+            .HasForeignKey(ps => ps.IdServicio);
 
-        modelBuilder.Entity<Habitacione>(entity =>
-        {
-            entity.HasOne(d => d.Paquete)
-                .WithMany(p => p.Habitaciones)
-                .HasForeignKey(d => d.IdPaquete)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_Habitacion_PaqueteTuristico");
-        });
+        // Configuración de la relación muchos-a-muchos entre Paquetes y Habitaciones
+        modelBuilder.Entity<PaqueteHabitacion>()
+            .HasKey(ph => new { ph.IdPaquete, ph.IdHabitacion });
+
+        modelBuilder.Entity<PaqueteHabitacion>()
+            .HasOne(ph => ph.IdPaqueteNavigation)
+            .WithMany(p => p.PaqueteHabitaciones)
+            .HasForeignKey(ph => ph.IdPaquete);
+
+        modelBuilder.Entity<PaqueteHabitacion>()
+            .HasOne(ph => ph.IdHabitacionNavigation)
+            .WithMany(h => h.PaqueteHabitaciones)
+            .HasForeignKey(ph => ph.IdHabitacion);
+
+
 
         modelBuilder.Entity<Habitacione>(entity =>
         {
