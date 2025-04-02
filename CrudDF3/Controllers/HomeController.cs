@@ -13,10 +13,16 @@ namespace CrudDF3.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var habitaciones = await _context.Habitaciones.ToListAsync();
-            return View(habitaciones); // Pasamos las habitaciones a la vista
+            var paquetes = _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                    .ThenInclude(ps => ps.IdServicioNavigation)
+                .Include(p => p.PaqueteHabitaciones)
+                    .ThenInclude(ph => ph.IdHabitacionNavigation)
+                .ToList();
+
+            return View(paquetes);
         }
     }
 }
