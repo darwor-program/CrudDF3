@@ -1,0 +1,41 @@
+﻿@model IEnumerable<CrudDF3.Models.Habitacione> 
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bienvenido a CrudDF</h1>
+    <p>Descubre nuestras habitaciones disponibles:</p>
+</div>
+
+<!-- Mostrar habitaciones en un diseño de tarjetas -->
+<div class="container">
+    <div class="row">
+        @foreach (var habitacion in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                       <img src="~/Imagenes/istockphoto-1390233984-612x612.jpg" class="card-img-top" alt="@habitacion.TipoHabitacion" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@habitacion.TipoHabitacion</h5>
+                        <p class="card-text">@habitacion.DescripcionHabitacion</p>
+                        <p class="card-text"><strong>Capacidad:</strong> @habitacion.CapacidadHuespedes huéspedes</p>
+                        <p class="card-text"><strong>Tarifa:</strong> $@habitacion.TarifaHabitacion</p>
+                        <p class="card-text"><strong>Características:</strong> @habitacion.CaracteristicasHabitacion</p>
+
+                        @if (habitacion.EstadoHabitacion)
+                        {
+                            <a href="#" class="btn btn-success">Disponible</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="btn btn-danger">No Disponible</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

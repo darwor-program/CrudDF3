@@ -1,0 +1,113 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+﻿@{
+    // Accede al valor de idRol desde la sesión
+    var idRol = Context.Session.GetString("idRol");
+}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CrudDF</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <header class="Layout">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CrudDF</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    @if (Context.Session.GetString("idUsuario") != null)
+                    {
+                        <!-- MENÚ CUANDO EL USUARIO HA INICIADO SESIÓN -->
+                        <ul class="navbar-nav me-auto">
+                            @if (idRol != null && idRol == "1") // Comprobamos si idRol es "1"
+                            {
+                                <!-- Menús visibles solo si el rol es "1" -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Huespedes" asp-action="Index">Huespedes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="Index">Paquete Turístico</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Roles" asp-action="Index">Roles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Servicios" asp-action="Index">Servicios</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Permisoes" asp-action="Index">Permisos</a>
+                                </li>
+                            }
+                            else if (idRol != null && idRol == "2") // Si el idRol es "2" (por ejemplo, rol de cliente)
+                            {
+                                <!-- Menú específico para el rol "2" -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Mis Reservas</a>
+                                </li>
+                            }
+                        </ul>
+
+                        <!-- BOTÓN DE CERRAR SESIÓN -->
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a>
+                            </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <!-- MENÚ CUANDO EL USUARIO NO HA INICIADO SESIÓN -->
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Registrar">Registrarse</a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - CrudDF - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
+

@@ -1,0 +1,69 @@
+﻿@model CrudDF3.Models.PaquetesTuristico
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>PaquetesTuristico</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdPaquete" />
+            <div class="form-group">
+                <label asp-for="NombrePaquete" class="control-label"></label>
+                <input asp-for="NombrePaquete" class="form-control" />
+                <span asp-validation-for="NombrePaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DescripcionPaquete" class="control-label"></label>
+                <input asp-for="DescripcionPaquete" class="form-control" />
+                <span asp-validation-for="DescripcionPaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrecioPaquete" class="control-label"></label>
+                <input asp-for="PrecioPaquete" class="form-control" />
+                <span asp-validation-for="PrecioPaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DisponibilidadPaquete" /> @Html.DisplayNameFor(model => model.DisponibilidadPaquete)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaPaquete" class="control-label"></label>
+                <input asp-for="FechaPaquete" class="form-control" />
+                <span asp-validation-for="FechaPaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DestinoPaquete" class="control-label"></label>
+                <input asp-for="DestinoPaquete" class="form-control" />
+                <span asp-validation-for="DestinoPaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="EstadoPaquete" /> @Html.DisplayNameFor(model => model.EstadoPaquete)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoViajePaquete" class="control-label"></label>
+                <input asp-for="TipoViajePaquete" class="form-control" />
+                <span asp-validation-for="TipoViajePaquete" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
