@@ -1,77 +1,182 @@
 ﻿@model CrudDF3.Models.Usuario
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Usuario";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <h1 class="text-primary">Crear Nuevo Usuario</h1>
 
-<h4>Usuario</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CedulaUsuario" class="control-label"></label>
-                <input asp-for="CedulaUsuario" class="form-control" />
-                <span asp-validation-for="CedulaUsuario" class="text-danger"></span>
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-light">
+            <h4 class="card-title mb-0">Información del Usuario</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <form asp-action="Create" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Sección de información personal -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title">Datos Personales</h5>
+                            <hr class="section-divider">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="CedulaUsuario" class="form-label fw-bold"></label>
+                                        <input asp-for="CedulaUsuario" class="form-control" required />
+                                        <span asp-validation-for="CedulaUsuario" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="NombreUsuario" class="form-label fw-bold"></label>
+                                        <input asp-for="NombreUsuario" class="form-control" required />
+                                        <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="ApellidoUsuario" class="form-label fw-bold"></label>
+                                        <input asp-for="ApellidoUsuario" class="form-control" required />
+                                        <span asp-validation-for="ApellidoUsuario" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="FechaCreacion" class="form-label fw-bold"></label>
+                                        <input asp-for="FechaCreacion" class="form-control" type="date" required />
+                                        <span asp-validation-for="FechaCreacion" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección de contacto -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title">Información de Contacto</h5>
+                            <hr class="section-divider">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="CorreoUsuario" class="form-label fw-bold"></label>
+                                        <input asp-for="CorreoUsuario" class="form-control" type="email" required />
+                                        <span asp-validation-for="CorreoUsuario" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Telefono" class="form-label fw-bold"></label>
+                                        <input asp-for="Telefono" class="form-control" required />
+                                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label asp-for="Direccion" class="form-label fw-bold"></label>
+                                        <textarea asp-for="Direccion" class="form-control" rows="2"></textarea>
+                                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección de seguridad -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title">Seguridad y Acceso</h5>
+                            <hr class="section-divider">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="ContraseñaUsuario" class="form-label fw-bold"></label>
+                                        <input asp-for="ContraseñaUsuario" class="form-control" type="password" required />
+                                        <span asp-validation-for="ContraseñaUsuario" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="IdRol" class="form-label fw-bold"></label>
+                                        <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol" required>
+                                            <option value="">Seleccione un rol...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="EstadoUsuario" checked />
+                                        <label class="form-check-label fw-bold" asp-for="EstadoUsuario"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="form-actions mt-4">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                                </a>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Crear Usuario
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="NombreUsuario" class="control-label"></label>
-                <input asp-for="NombreUsuario" class="form-control" />
-                <span asp-validation-for="NombreUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ApellidoUsuario" class="control-label"></label>
-                <input asp-for="ApellidoUsuario" class="form-control" />
-                <span asp-validation-for="ApellidoUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CorreoUsuario" class="control-label"></label>
-                <input asp-for="CorreoUsuario" class="form-control" />
-                <span asp-validation-for="CorreoUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContraseñaUsuario" class="control-label"></label>
-                <input asp-for="ContraseñaUsuario" class="form-control" />
-                <span asp-validation-for="ContraseñaUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="EstadoUsuario" /> @Html.DisplayNameFor(model => model.EstadoUsuario)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaCreacion" class="control-label"></label>
-                <input asp-for="FechaCreacion" class="form-control" />
-                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdRol" class="control-label"></label>
-                <select asp-for="IdRol" class ="form-control" asp-items="ViewBag.IdRol"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #0d6efd;
+            font-size: 1.1rem;
+        }
+
+        .section-divider {
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+        }
+
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+    </style>
 }
