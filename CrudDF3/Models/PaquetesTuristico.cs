@@ -1,4 +1,6 @@
-﻿namespace CrudDF3.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CrudDF3.Models
 {
     public partial class PaquetesTuristico
     {
@@ -13,11 +15,13 @@
         public string? TipoViajePaquete { get; set; }
 
         public virtual ICollection<ReservasPaquete> ReservasPaquetes { get; set; } = new List<ReservasPaquete>();
-
-        // Relación muchos a muchos con Servicios
         public virtual ICollection<PaqueteServicio> PaqueteServicios { get; set; } = new List<PaqueteServicio>();
+        public virtual ICollection<PaqueteHabitacion> PaqueteHabitaciones { get; set; } = new List<PaqueteHabitacion>();
 
-        // Relación uno a muchos con Habitaciones
-        public virtual ICollection<Habitacione> Habitaciones { get; set; } = new List<Habitacione>();
+        // Propiedades para manejar la selección en las vistas
+        [NotMapped]
+        public List<int>? SelectedServicios { get; set; }
+        [NotMapped]
+        public List<int>? SelectedHabitaciones { get; set; }
     }
 }

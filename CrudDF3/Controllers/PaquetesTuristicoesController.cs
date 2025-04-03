@@ -1,4 +1,5 @@
-﻿using System;
+﻿// PaquetesTuristicoesController.cs
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,15 @@ namespace CrudDF3.Controllers
         // GET: PaquetesTuristicoes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.PaquetesTuristicos.ToListAsync());
+            var paquetes = await _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                    .ThenInclude(ps => ps.IdServicioNavigation)
+                .Include(p => p.PaqueteHabitaciones)
+                    .ThenInclude(ph => ph.IdHabitacionNavigation)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View(paquetes);
         }
 
         // GET: PaquetesTuristicoes/Details/5
@@ -32,60 +41,61 @@ namespace CrudDF3.Controllers
                 return NotFound();
             }
 
-            var paquetesTuristico = await _context.PaquetesTuristicos
+            var paquete = await _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                    .ThenInclude(ps => ps.IdServicioNavigation)
+                .Include(p => p.PaqueteHabitaciones)
+                    .ThenInclude(ph => ph.IdHabitacionNavigation)
                 .FirstOrDefaultAsync(m => m.IdPaquete == id);
-            if (paquetesTuristico == null)
+
+            if (paquete == null)
             {
                 return NotFound();
             }
 
-            return View(paquetesTuristico);
+            return View(paquete);
         }
 
         // GET: PaquetesTuristicoes/Create
         public IActionResult Create()
         {
-            // Cargar los servicios y habitaciones disponibles para que el usuario los seleccione
-            ViewData["Servicios"] = new SelectList(_context.Servicios, "IdServicio", "NombreServicio");
-            ViewData["Habitaciones"] = new SelectList(_context.Habitaciones, "IdHabitacion", "TipoHabitacion");
-
+            ViewData["Servicios"] = _context.Servicios.ToList();
+            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
             return View();
         }
 
         // POST: PaquetesTuristicoes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete, SelectedServicios, SelectedHabitaciones")] PaquetesTuristico paquetesTuristico)
+        public async Task<IActionResult> Create([Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
             if (ModelState.IsValid)
             {
-                // Agregar el PaqueteTuristico a la base de datos primero
-                _context.Add(paquetesTuristico);
+                _context.Add(paquete);
                 await _context.SaveChangesAsync();
 
-                // Guardar las relaciones entre PaqueteTuristico, Servicios y Habitaciones
-                if (paquetesTuristico.PaqueteServicios != null)
+                // Agregar servicios seleccionados
+                if (paquete.SelectedServicios != null)
                 {
-                    foreach (var servicioId in paquetesTuristico.PaqueteServicios)
+                    foreach (var servicioId in paquete.SelectedServicios)
                     {
                         _context.PaqueteServicios.Add(new PaqueteServicio
                         {
-                            IdPaquete = paquetesTuristico.IdPaquete,
-                            IdServicio = servicioId.IdPaqueteServicio
+                            IdPaquete = paquete.IdPaquete,
+                            IdServicio = servicioId
                         });
                     }
                 }
 
-                if (paquetesTuristico.Habitaciones != null)
+                // Agregar habitaciones seleccionadas
+                if (paquete.SelectedHabitaciones != null)
                 {
-                    foreach (var habitacionId in paquetesTuristico.Habitaciones)
+                    foreach (var habitacionId in paquete.SelectedHabitaciones)
                     {
-                        _context.Habitaciones.Add(new Habitacione
+                        _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
                         {
-                            IdPaquete = paquetesTuristico.IdPaquete,
-                            IdHabitacion = habitacionId.IdHabitacion
+                            IdPaquete = paquete.IdPaquete,
+                            IdHabitacion = habitacionId
                         });
                     }
                 }
@@ -94,18 +104,43 @@ namespace CrudDF3.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(paquetesTuristico);
+            ViewData["Servicios"] = _context.Servicios.ToList();
+            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            return View(paquete);
         }
 
+        // GET: PaquetesTuristicoes/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var paquete = await _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                .Include(p => p.PaqueteHabitaciones)
+                .FirstOrDefaultAsync(p => p.IdPaquete == id);
+
+            if (paquete == null)
+            {
+                return NotFound();
+            }
+
+            paquete.SelectedServicios = paquete.PaqueteServicios.Select(ps => ps.IdServicio).ToList();
+            paquete.SelectedHabitaciones = paquete.PaqueteHabitaciones.Select(ph => ph.IdHabitacion).ToList();
+
+            ViewData["Servicios"] = _context.Servicios.ToList();
+            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            return View(paquete);
+        }
 
         // POST: PaquetesTuristicoes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete")] PaquetesTuristico paquetesTuristico)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaquete,NombrePaquete,DescripcionPaquete,PrecioPaquete,DisponibilidadPaquete,FechaPaquete,DestinoPaquete,EstadoPaquete,TipoViajePaquete,SelectedServicios,SelectedHabitaciones")] PaquetesTuristico paquete)
         {
-            if (id != paquetesTuristico.IdPaquete)
+            if (id != paquete.IdPaquete)
             {
                 return NotFound();
             }
@@ -114,12 +149,68 @@ namespace CrudDF3.Controllers
             {
                 try
                 {
-                    _context.Update(paquetesTuristico);
+                    // Actualizar el paquete
+                    _context.Update(paquete);
+
+                    // Actualizar servicios
+                    var serviciosActuales = await _context.PaqueteServicios
+                        .Where(ps => ps.IdPaquete == id)
+                        .ToListAsync();
+
+                    // Eliminar servicios no seleccionados
+                    foreach (var servicio in serviciosActuales)
+                    {
+                        if (!paquete.SelectedServicios.Contains(servicio.IdServicio))
+                        {
+                            _context.PaqueteServicios.Remove(servicio);
+                        }
+                    }
+
+                    // Agregar nuevos servicios seleccionados
+                    foreach (var servicioId in paquete.SelectedServicios)
+                    {
+                        if (!serviciosActuales.Any(ps => ps.IdServicio == servicioId))
+                        {
+                            _context.PaqueteServicios.Add(new PaqueteServicio
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdServicio = servicioId
+                            });
+                        }
+                    }
+
+                    // Actualizar habitaciones
+                    var habitacionesActuales = await _context.PaqueteHabitaciones
+                        .Where(ph => ph.IdPaquete == id)
+                        .ToListAsync();
+
+                    // Eliminar habitaciones no seleccionadas
+                    foreach (var habitacion in habitacionesActuales)
+                    {
+                        if (!paquete.SelectedHabitaciones.Contains(habitacion.IdHabitacion))
+                        {
+                            _context.PaqueteHabitaciones.Remove(habitacion);
+                        }
+                    }
+
+                    // Agregar nuevas habitaciones seleccionadas
+                    foreach (var habitacionId in paquete.SelectedHabitaciones)
+                    {
+                        if (!habitacionesActuales.Any(ph => ph.IdHabitacion == habitacionId))
+                        {
+                            _context.PaqueteHabitaciones.Add(new PaqueteHabitacion
+                            {
+                                IdPaquete = paquete.IdPaquete,
+                                IdHabitacion = habitacionId
+                            });
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PaquetesTuristicoExists(paquetesTuristico.IdPaquete))
+                    if (!PaqueteTuristicoExists(paquete.IdPaquete))
                     {
                         return NotFound();
                     }
@@ -130,7 +221,10 @@ namespace CrudDF3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(paquetesTuristico);
+
+            ViewData["Servicios"] = _context.Servicios.ToList();
+            ViewData["Habitaciones"] = _context.Habitaciones.ToList();
+            return View(paquete);
         }
 
         // GET: PaquetesTuristicoes/Delete/5
@@ -141,14 +235,19 @@ namespace CrudDF3.Controllers
                 return NotFound();
             }
 
-            var paquetesTuristico = await _context.PaquetesTuristicos
+            var paquete = await _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                    .ThenInclude(ps => ps.IdServicioNavigation)
+                .Include(p => p.PaqueteHabitaciones)
+                    .ThenInclude(ph => ph.IdHabitacionNavigation)
                 .FirstOrDefaultAsync(m => m.IdPaquete == id);
-            if (paquetesTuristico == null)
+
+            if (paquete == null)
             {
                 return NotFound();
             }
 
-            return View(paquetesTuristico);
+            return View(paquete);
         }
 
         // POST: PaquetesTuristicoes/Delete/5
@@ -156,17 +255,26 @@ namespace CrudDF3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var paquetesTuristico = await _context.PaquetesTuristicos.FindAsync(id);
-            if (paquetesTuristico != null)
+            var paquete = await _context.PaquetesTuristicos
+                .Include(p => p.PaqueteServicios)
+                .Include(p => p.PaqueteHabitaciones)
+                .FirstOrDefaultAsync(p => p.IdPaquete == id);
+
+            if (paquete != null)
             {
-                _context.PaquetesTuristicos.Remove(paquetesTuristico);
+                // Eliminar relaciones primero
+                _context.PaqueteServicios.RemoveRange(paquete.PaqueteServicios);
+                _context.PaqueteHabitaciones.RemoveRange(paquete.PaqueteHabitaciones);
+
+                // Luego eliminar el paquete
+                _context.PaquetesTuristicos.Remove(paquete);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PaquetesTuristicoExists(int id)
+        private bool PaqueteTuristicoExists(int id)
         {
             return _context.PaquetesTuristicos.Any(e => e.IdPaquete == id);
         }
