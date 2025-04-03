@@ -219,19 +219,28 @@ namespace CrudDF3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // OBTENER TODOS LOS USUARIOS QUE TIENEN EL ROL A ELIMINAR
+            var usuariosConRol = await _context.Usuarios.Where(u => u.IdRol == id).ToListAsync();
+
+            // PONER `IdRol` EN NULL PARA QUE QUEDEN SIN ROL
+            foreach (var usuario in usuariosConRol)
+            {
+                usuario.IdRol = null;
+            }
+
+            // GUARDAR CAMBIOS EN USUARIOS
+            await _context.SaveChangesAsync();
+
+            // AHORA SE PUEDE ELIMINAR EL ROL
             var role = await _context.Roles.FindAsync(id);
             if (role != null)
             {
                 _context.Roles.Remove(role);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RoleExists(int id)
-        {
-            return _context.Roles.Any(e => e.IdRol == id);
-        }
     }
 }
