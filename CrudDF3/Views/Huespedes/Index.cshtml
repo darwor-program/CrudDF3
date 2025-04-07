@@ -1,65 +1,135 @@
 ﻿@model IEnumerable<CrudDF3.Models.Huespede>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Huéspedes";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-users me-2"></i>@ViewData["Title"]
+        </h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Nuevo Huésped
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CedulaHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NombreHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApellidoHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CorreoHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaEntradaHuesped)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaSalidaHuesped)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CedulaHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApellidoHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CorreoHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaEntradaHuesped)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaSalidaHuesped)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdHuesped">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdHuesped">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdHuesped">Delete</a>
-            </td>
-        </tr>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Identificación</th>
+                            <th>Huésped</th>
+                            <th>Contacto</th>
+                            <th>Estadía</th>
+                            <th class="pe-4 text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-top">
+                                <td class="ps-4">
+                                    <div class="fw-semibold">@item.CedulaHuesped</div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">@item.NombreHuesped @item.ApellidoHuesped</div>
+                                </td>
+                                <td>
+                                    <div class="text-muted">@item.CorreoHuesped</div>
+                                </td>
+                                <td>
+                                    @if (item.FechaEntradaHuesped != null && item.FechaSalidaHuesped != null)
+                                    {
+                                        <div class="d-flex flex-column">
+                                            <small class="text-nowrap">
+                                                <i class="far fa-calendar-alt me-1"></i>
+                                                @item.FechaEntradaHuesped.Value.ToString("dd MMM yyyy") -
+                                                @item.FechaSalidaHuesped.Value.ToString("dd MMM yyyy")
+                                            </small>
+                                            <small class="text-muted">
+                                                @((item.FechaSalidaHuesped - item.FechaEntradaHuesped)?.Days) noches
+                                            </small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted">Sin fechas</span>
+                                    }
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.IdHuesped"
+                                           class="btn btn-outline-primary" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.IdHuesped"
+                                           class="btn btn-outline-secondary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdHuesped"
+                                           class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .table {
+            font-size: 0.9rem;
+        }
+
+            .table th {
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.75rem;
+                color: #6c757d;
+                background-color: #f8f9fa;
+            }
+
+        .badge {
+            font-weight: 400;
+            padding: 0.35em 0.5em;
+            font-size: 0.75em;
+            border-radius: 0.25rem;
+        }
+
+        .fw-semibold {
+            font-weight: 500;
+        }
+
+        .btn-group-sm > .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .text-nowrap {
+            white-space: nowrap;
+        }
+    </style>
 }
-    </tbody>
-</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('[title]').tooltip();
+        });
+    </script>
+}

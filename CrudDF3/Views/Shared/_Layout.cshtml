@@ -1,6 +1,7 @@
 ﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var nombreRol = Context.Session.GetString("nombreRol");
+    var usuarioAutenticado = Context.Session.GetString("idUsuario") != null;
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -8,50 +9,163 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CrudDF</title>
+    <title>@ViewData["Title"] - AdminPanel</title>
+
+    <!-- Fuentes minimalistas -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    @await RenderSectionAsync("Styles", required: false) <!-- Agrega esta línea -->
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --border-color: #dee2e6;
+            --primary-accent: #6c757d;
+            --hover-accent: #495057;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 0.8rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--text-color) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(0,0,0,0.03);
+            color: var(--hover-accent) !important;
+        }
+
+        .container-main {
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            color: var(--text-color);
+        }
+
+        .dropdown-menu {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .role-badge {
+            font-size: 0.7rem;
+            background-color: var(--border-color);
+            color: var(--text-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
-    <header class="Layout">
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CrudDF</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    AdminPanel
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    @if (Context.Session.GetString("idUsuario") != null)
+                    @if (usuarioAutenticado)
                     {
                         <ul class="navbar-nav me-auto">
                             @if (nombreRol == "Administrador")
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Huespedes" asp-action="Index">Huespedes</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="PaquetesTuristicoes" asp-action="Index">Paquetes</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Roles" asp-action="Index">Roles</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Servicios" asp-action="Index">Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Permisoes" asp-action="Index">Permisos</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Habitaciones" asp-action="Index">Habitaciones</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Huespedes" asp-action="Index">Huéspedes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="PaquetesTuristicos" asp-action="Index">Paquetes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Roles" asp-action="Index">Roles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Servicios" asp-action="Index">Servicios</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Permisoes" asp-action="Index">Permisos</a>
+                                </li>
                             }
                             else if (nombreRol == "Cliente")
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Mis Reservas</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Reservas" asp-action="Index">Mis Reservas</a>
+                                </li>
                             }
                         </ul>
+
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Mi Cuenta <span class="role-badge">@nombreRol</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     }
                     else
                     {
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Registrar">Registrarse</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Registrar">Registrarse</a>
+                            </li>
                         </ul>
                     }
                 </div>
@@ -59,21 +173,22 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container container-main">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - CrudDF - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - AdminPanel - <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
